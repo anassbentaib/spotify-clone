@@ -12,7 +12,7 @@ const Authentification = () => {
     setLoading(true);
     try {
       const clientId = "5e7212fc7cf24c199602a197fda7bccc";
-      const redirectUri = "spotifyycloneapp.netlify.app";
+      const redirectUri = "https://spotifyycloneapp.netlify.app/";
       const appUrl = "https://accounts.spotify.com/authorize";
       const scopes = [
         "user-read-private",
