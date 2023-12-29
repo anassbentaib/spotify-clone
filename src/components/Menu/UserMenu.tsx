@@ -19,8 +19,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
   }, []);
-  const handleRedirect = () => {
-    window.location.assign("/login");
+  const Logout = () => {
+    localStorage.removeItem("spotify_token");
+    setTimeout(() => {
+      window.location.assign("/login");
+    }, 100);
   };
 
   return (
@@ -62,11 +65,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   }
                   icon={MdOpenInNew}
                 />
-                <MenuItem
-                  label="Logout"
-                  onClick={() => window.location.assign("/login")}
-                  icon={MdOpenInNew}
-                />
+                <MenuItem label="Logout" onClick={Logout} icon={MdOpenInNew} />
               </div>
             </div>
           )}
@@ -74,10 +73,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
       ) : (
         <div className="flex items-center min-w-[300px]">
           <div className="w-full mr-3">
-            <Button label="Signup" border onClick={handleRedirect} small />
+            <Button label="Signup" border onClick={Logout} small />
           </div>
           <div className="w-full">
-            <Button label="Login" outline onClick={handleRedirect} small />
+            <Button label="Login" outline onClick={Logout} small />
           </div>
         </div>
       )}

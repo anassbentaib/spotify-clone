@@ -9,29 +9,6 @@ const Dashboard = () => {
   const { user } = getCurrentUser();
   const playlists = useSelector((state: RootState) => state?.playlists?.items);
 
-  useEffect(() => {
-    const hash = window.location.hash
-      .substring(1)
-      .split("&")
-      .reduce<{ [key: string]: string }>((acc, pair) => {
-        const [key, value] = pair.split("=");
-        acc[key] = value;
-        return acc;
-      }, {});
-
-    const token = hash.access_token;
-    if (!token) {
-      console.error("Access token not found in hash:", hash);
-      return;
-    }
-    const tokenObject = {
-      access_token: token,
-      token_type: hash.token_type,
-      expires_in: hash.expires_in,
-    };
-
-    localStorage.setItem("spotify_token", JSON.stringify(tokenObject));
-  }, [history]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";

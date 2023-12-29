@@ -40,6 +40,7 @@ export const getCurrentUser = () => {
         loginTime !== null &&
         currentTime - Number(loginTime) > expirationTime
       ) {
+        localStorage.removeItem("spotify_token");
         window.location.href = "/login";
       }
     };
