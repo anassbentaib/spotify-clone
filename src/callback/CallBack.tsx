@@ -1,28 +1,45 @@
+import EmptyState from "@/components/EmptyState/page";
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CallBack = () => {
-  const location = useLocation();
   const history = useNavigate();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const code = params.get("code");
-    const state = params.get("state");
-    const storedState = localStorage.getItem("spotify_token");
+    // throw error
+    const hash = window.location.hash
+      .substring(1)
+      .split("&")
+      .reduce<{ [key: string]: string }>((acc, pair) => {
+        const [key, value] = pair.split("=");
+        acc[key] = value;
+        return acc;
+      }, {});
 
-    if (state === storedState) {
-      if (code) {
-        history("/");
-      } else {
-        console.error("Authorization code not found in the URL");
-      }
-    } else {
-      console.error("State mismatch - possible CSRF attack");
+    const token = hash.access_token;
+    if (!token) {
+      console.error("Access token not found in hash:", hash);
+      return;
     }
-  }, [location, history]);
+    const tokenObject = {
+      access_token: token,
+      token_type: hash.token_type,
+      expires_in: hash.expires_in,
+    };
 
-  return <div>Loading...</div>;
+    localStorage.setItem("spotify_token", JSON.stringify(tokenObject));
+    window.location.assign("/");
+  }, [history]);
+
+  return (
+    <div className="w-full relative mx-auto">
+      <div className="">
+        <div className="bg-[#000]  min-h-[100vh]">
+          <EmptyState title="Logging..." subTitle="Please wait an moment..." />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CallBack;

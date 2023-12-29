@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import {
   Authentification,
+  CallBack,
   Dashboard,
   DashboardDetails,
   PlaylistsPage,
@@ -19,6 +20,8 @@ function App() {
           <Route path="/playlists/:id" element={<PlaylistsPage />} />
           <Route path="/artists/artist/:id" element={<UserPage />} />
           <Route path="/section/:type" element={<DashboardDetails />} />
+          <Route path="/callback" element={<CallBack />} />
+
         </Routes>
       </Router>
     </div>

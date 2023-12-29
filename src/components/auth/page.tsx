@@ -1,18 +1,15 @@
 import { Image } from "@chakra-ui/react";
 import Button from "../Button/Button";
-import { useState } from "react";
-import { toast } from "react-hot-toast";
 import { FaSpotify, FaFacebook, FaApple } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "@chakra-ui/react";
 const Authentification = () => {
-  const [loading, setLoading] = useState(false);
-
   const handleLogin = () => {
-    setLoading(true);
     try {
       const clientId = "5e7212fc7cf24c199602a197fda7bccc";
-      const redirectUri = "https://spotifyycloneapp.netlify.app/";
+      // const redirectUri = "https://spotifyycloneapp.netlify.app/";
+      const redirectUri = "http://localhost:5173/callback";
+
       const appUrl = "https://accounts.spotify.com/authorize";
       const scopes = [
         "user-read-private",
@@ -34,9 +31,6 @@ const Authentification = () => {
       )}&response_type=token&show_dialog=true`;
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -53,7 +47,7 @@ const Authentification = () => {
           </Link>
         </div>
       </div>
-      <div className="w-full mx-auto max-w-[900px] lg:max-w-[730px] min-h-[80vh] md:max-w-[500px] sm:max-w-0 bg-[#000] px-10 rounded-[7px]">
+      <div className="w-full mx-auto   max-w-[900px] lg:max-w-[730px] min-h-[80vh] md:max-w-[500px] sm:max-w-[100%] bg-[#000] px-10 rounded-[7px]">
         <div className=" justify-center">
           <div className="pt-20  mx-auto text-center max-w-[400px]">
             <h5 className="xl:text-[2.1rem] lg:text-[2.1rem] md:text-[2rem] sm:text-[1.9rem] font-[700] text-white pb-8">
@@ -86,7 +80,6 @@ const Authentification = () => {
             <div className="flex justify-center items-center mt-[13px]">
               <Button
                 icon={FaSpotify}
-                disabled={loading}
                 onClick={handleLogin}
                 label="Continue with Spotify"
               />
