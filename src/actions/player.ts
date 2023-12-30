@@ -81,6 +81,8 @@ export const PlayTrack = createAsyncThunk<Track>(
 
       return response.data;
     } catch (error) {
+      console.log("error", error);
+
       return rejectWithValue(error);
     }
   }

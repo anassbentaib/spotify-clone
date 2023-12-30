@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { setPlaylistDetails } from "@/features/playlists";
 import EmptyState from "../EmptyState/page";
+import { none } from "@/assets";
 interface PlaylistDetailsProps {
   currentUser?: {
     userId: string | null;
@@ -83,10 +84,7 @@ const PlaylistDetails: React.FC<PlaylistDetailsProps> = ({ currentUser }) => {
                   >
                     <Image
                       className="object-cover h-full w-full group-hover:scale-110 transition"
-                      src={
-                        playlistsDetails?.images?.[0]?.url ||
-                        "https://img.freepik.com/premium-vector/simple-music-logo-design-concept-vector_9850-3776.jpg"
-                      }
+                      src={playlistsDetails?.images?.[0]?.url || none}
                       w="100%"
                       alt="Listing"
                       h={{

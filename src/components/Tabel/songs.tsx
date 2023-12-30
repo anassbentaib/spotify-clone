@@ -20,6 +20,7 @@ import { RootState } from "@/types";
 import { token } from "@/token";
 import { PlayTrack } from "@/actions/player";
 import { setPlayTrack } from "@/features/player";
+import { none } from "@/assets";
 
 interface TdRowProps {
   children: React.ReactNode;
@@ -65,22 +66,21 @@ const SongsTable: React.FC<SongsTableProps> = ({
     return `${minutes}:${(+seconds < 10 ? "0" : "") + seconds}`;
   }
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
-  const tracks = useSelector((state: RootState) => state.tracks?.items);
 
   const handlePlayTrack = async () => {
-    if (token && token?.access_token) {
+    if (token?.access_token) {
       try {
         await dispatch(PlayTrack());
 
-        const track = tracks?.map(({ id, name }: any) => ({ id, name }));
+        const tracks = playlistsDetails?.tracks || [];
+        const track = tracks.map(({ id, name }: any) => ({
+          id,
+          name,
+        }));
 
         dispatch(setPlayTrack(track));
-      } catch (error: any) {
-        if (error.message === "Premium account required to play tracks") {
-          console.error("Premium account required to play tracks");
-        } else {
-          console.error("Error play track:", error);
-        }
+      } catch (error) {
+        console.error("Error play track:", error);
       }
     }
   };
@@ -119,7 +119,7 @@ const SongsTable: React.FC<SongsTableProps> = ({
                             track?.images?.[0]?.url ||
                             artitsDetails?.tracks?.[index]?.artists?.[0]
                               ?.album?.[0]?.images?.[0]?.url ||
-                            "https://img.freepik.com/premium-vector/simple-music-logo-design-concept-vector_9850-3776.jpg"
+                            none
                           }
                           w={50}
                           h={50}

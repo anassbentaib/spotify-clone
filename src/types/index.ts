@@ -2,6 +2,7 @@ export interface RootState {
   player: {
     player: any;
     isPlaying: any;
+    currentTrack: any;
   };
   user: {
     currentUser: any;

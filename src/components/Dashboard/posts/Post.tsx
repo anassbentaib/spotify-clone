@@ -1,3 +1,4 @@
+import { none } from "@/assets";
 import { Album } from "@/features/albums";
 import { Artist } from "@/features/artists";
 import { Playlist } from "@/features/playlists";
@@ -31,18 +32,16 @@ const PostCard: React.FC<PostCardProps> = ({
     data: Playlist[] | Track[] | Artist[] | Album[] | null
   ): string => {
     if (!data || data.length === 0) {
-      return "Unknown";
+      return none;
     }
 
     const item = data;
 
     if ("images" in item) {
-      return (
-        (item as { images?: { url: string }[] }).images?.[0]?.url || "Unknown"
-      );
+      return (item as { images?: { url: string }[] }).images?.[0]?.url || none;
     }
 
-    return "Unknown";
+    return none;
   };
 
   const imageUrl = getImageUrl(data);

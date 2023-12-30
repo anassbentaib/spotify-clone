@@ -12,6 +12,7 @@ import { IoPlayCircle } from "react-icons/io5";
 import { getArtistTracks } from "@/actions/getArtists";
 import { setArtistDetails } from "@/features/artists";
 import EmptyState from "../EmptyState/page";
+import { none } from "@/assets";
 
 interface ArtistsProps {
   currentUser?: {
@@ -81,8 +82,7 @@ const Artists: React.FC<ArtistsProps> = ({ currentUser }) => {
                     <Image
                       className="object-cover h-full w-full group-hover:scale-110 transition"
                       src={
-                        artitsDetails?.tracks[0]?.album.images?.[0]?.url ||
-                        "https://img.freepik.com/premium-vector/simple-music-logo-design-concept-vector_9850-3776.jpg"
+                        artitsDetails?.tracks[0]?.album.images?.[0]?.url || none
                       }
                       w="100%"
                       alt="Listing"
