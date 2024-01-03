@@ -16,7 +16,7 @@ interface MainPageProps {
     imageUrl: string | null;
   } | null;
 }
-if (!token || !token.access_token) {
+if (token === null || !token.access_token === null) {
   <EmptyState
     title="Unauthenticated"
     subTitle="Unauthenticated, Please login"
