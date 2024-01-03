@@ -1,58 +1,63 @@
-import { none } from "@/assets";
-import { Track } from "@/features/trackes";
-import { Image, Link } from "@chakra-ui/react";
-import React from "react";
+import { fetchAllTracks } from "@/actions/getAllTracks";
+import Heading from "@/components/ui/Heading";
+import { Track, setTrackData } from "@/features/trackes";
+import { token } from "@/token";
+import { RootState } from "@/types";
+import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import SongsCard from "./songsCard";
+import NoDataFound from "@/components/EmptyState/NoDataFound";
 
-interface SongPostProps {
-  track: Track | null;
-  backgroundColor?: boolean;
-  name?: boolean;
-}
+const TracksPage = () => {
+  const tracks = useSelector((state: RootState) => state.tracks?.items);
+  const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
 
-const SongPost = ({ track, backgroundColor, name }: SongPostProps) => {
+  const getAllTracks = () => {
+    if (token && token.access_token) {
+      dispatch(fetchAllTracks(token.access_token))
+        .then((resultAction: any) => {
+          if (fetchAllTracks.fulfilled.match(resultAction)) {
+            const tracks = resultAction.payload;
+            dispatch(setTrackData(tracks));
+          } else {
+            console.error("Error fetching tracks:", resultAction.error);
+          }
+        })
+        .catch((error: any) => {
+          console.error(error);
+        });
+    }
+  };
+  useEffect(() => {
+    getAllTracks();
+  }, [dispatch, token?.access_token]);
+
+  if (!tracks) {
+    return <NoDataFound />;
+  }
   return (
-    <div
-      className={`flex items-center ${
-        backgroundColor && "bg-gray-300"
-      } bg-opacity-30 rounded-[3px] shadow-lg min-h-[50px] justify-start w-full`}
-    >
-      {track && (
-        <div key={track.id} className="flex items-center">
-          <div className="max-w-[100px] w-[100px] h-[50px]">
-            <Image
-              src={track.images?.[0]?.url || none}
-              h="100%"
-              w="100%"
-              objectFit="cover"
-            />
+    <div className="pb-10">
+      <Heading title="Good Afternone" />
+      <div className="pt-4 mx-auto">
+        {tracks?.length ? (
+          <div className="grid mx-auto gap-2 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
+            {tracks.slice(0, 9).map((track: any) => (
+              <SongsCard
+                key={track.id}
+                track={track as Track}
+                backgroundColor
+              />
+            ))}
           </div>
-          <div className="w-full ml-3 ">
-            <div className="">
-              <div className="flex items-center text-[13px] sm:text-[12px] md:text-[13px] xl:text-[13px] 2xl:text-[13px]">
-                {track?.artists?.slice(0, 2).map((artist, index) => (
-                  <React.Fragment key={artist?.id}>
-                    <Link href={`/artists/artist/${artist?.id}`}>
-                      <span>{artist?.name}</span>
-                    </Link>
-
-                    {index < 1 && <span>,&nbsp;</span>}
-                    {index === 1 &&
-                      track?.artists?.length &&
-                      track.artists.length > 2 && <span>...</span>}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-            {name && (
-              <div className="text-[11px] font-bold text-[#a7a7a7]">
-                {track.name}
-              </div>
-            )}
+        ) : (
+          <div className="flex items-center justify-center">
+            No tracks found
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
 
-export default SongPost;
+export default TracksPage;

@@ -64,7 +64,6 @@ export const PauseTrack = createAsyncThunk<Track>(
     }
   }
 );
-
 export const PlayTrack = createAsyncThunk<Track>(
   "play/playTrack",
   async (_, { rejectWithValue }) => {

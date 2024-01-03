@@ -13,9 +13,9 @@ const Authentification = () => {
       const appUrl = "https://accounts.spotify.com/authorize";
       const scopes = [
         "user-read-private",
+        "user-modify-playback-state",
         "user-read-email",
         "user-read-playback-state",
-        "user-modify-playback-state",
         "user-read-currently-playing",
         "user-follow-modify",
         "user-follow-read",
@@ -25,6 +25,7 @@ const Authentification = () => {
         "user-library-read",
         "user-library-modify",
       ];
+      
 
       window.location.href = `${appUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
         "%20"

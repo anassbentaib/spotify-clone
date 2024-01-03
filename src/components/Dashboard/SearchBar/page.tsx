@@ -32,6 +32,10 @@ const SearchPage = () => {
   };
   useEffect(() => {
     getPlaylists();
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [dispatch, token?.access_token]);
   const playlists = useSelector((state: RootState) => state?.playlists?.items);
 

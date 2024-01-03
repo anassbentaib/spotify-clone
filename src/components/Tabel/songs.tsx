@@ -14,12 +14,6 @@ import React from "react";
 import HeartButton from "../Button/HeartButton";
 import { AiFillClockCircle } from "react-icons/ai";
 import { ArtistDetails } from "@/features/artists";
-import { useDispatch, useSelector } from "react-redux";
-import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import { RootState } from "@/types";
-import { token } from "@/token";
-import { PlayTrack } from "@/actions/player";
-import { setPlayTrack } from "@/features/player";
 import { none } from "@/assets";
 
 interface TdRowProps {
@@ -65,25 +59,6 @@ const SongsTable: React.FC<SongsTableProps> = ({
     const seconds = ((durationInMs % 60000) / 1000).toFixed(0);
     return `${minutes}:${(+seconds < 10 ? "0" : "") + seconds}`;
   }
-  const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
-
-  const handlePlayTrack = async () => {
-    if (token?.access_token) {
-      try {
-        await dispatch(PlayTrack());
-
-        const tracks = playlistsDetails?.tracks || [];
-        const track = tracks.map(({ id, name }: any) => ({
-          id,
-          name,
-        }));
-
-        dispatch(setPlayTrack(track));
-      } catch (error) {
-        console.error("Error play track:", error);
-      }
-    }
-  };
 
   return (
     <div className="w-full p- mx-auto px-4 pb-10">
@@ -109,7 +84,7 @@ const SongsTable: React.FC<SongsTableProps> = ({
           {playlistsDetails?.tracks?.length ? (
             <Tbody>
               {playlistsDetails?.tracks?.map((track, index) => (
-                <Tr key={track?.id} onClick={handlePlayTrack} cursor="pointer">
+                <Tr key={track?.id} cursor="pointer">
                   <TdRow>{track?.track_number || index + 1}</TdRow>
                   <TdRow>
                     <div className="flex items-center ">

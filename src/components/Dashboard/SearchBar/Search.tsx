@@ -1,11 +1,14 @@
-import { searchTracks } from "@/actions/search";
 import Navbar from "@/components/Navbar/page";
-import { setSearchResults } from "@/features/search";
+import Heading from "@/components/ui/Heading";
 import { token } from "@/token";
 import { RootState } from "@/types";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import PostCard from "../posts/Post";
+import EmptyState from "@/components/EmptyState/page";
+import { fetchAllTracks } from "@/actions/getAllTracks";
+import { setTrackData } from "@/features/trackes";
 
 interface SearchPageProps {
   currentUser?: {
@@ -16,38 +19,38 @@ interface SearchPageProps {
   } | null;
 }
 const Search: React.FC<SearchPageProps> = ({ currentUser }) => {
-  const searchResults = useSelector(
-    (state: RootState) => state?.search?.searchResults
-  );
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
-  const searchQuery = useSelector(
-    (state: RootState) => state?.search?.searchQuery
-  );
+  const tracks = useSelector((state: RootState) => state.tracks?.items);
 
-  const handleSearch = async () => {
-    try {
-      if (token && token.access_token && searchQuery) {
-        const resultAction = await dispatch(searchTracks(searchQuery));
-
-        if (searchTracks.fulfilled.match(resultAction)) {
-
-          const playlistDetails = resultAction.payload;
-          dispatch(setSearchResults(playlistDetails));
-        } else {
-          console.error(
-            "Error fetching  tracks in search method :",
-            resultAction.error
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching  tracks in search method :", error);
+  const getAllTracks = () => {
+    if (token && token.access_token) {
+      dispatch(fetchAllTracks(token.access_token))
+        .then((resultAction: any) => {
+          if (fetchAllTracks.fulfilled.match(resultAction)) {
+            const tracks = resultAction.payload;
+            dispatch(setTrackData(tracks));
+          } else {
+            console.error("Error fetching tracks:", resultAction.error);
+          }
+        })
+        .catch((error: any) => {
+          console.error(error);
+        });
     }
   };
 
   useEffect(() => {
-    handleSearch();
-  }, [dispatch, token.access_token]);
+    getAllTracks();
+  }, [dispatch, token?.access_token]);
+
+  if (!tracks) {
+    return (
+      <EmptyState
+        title="Unauthenticated"
+        subTitle="Unauthenticated, Please login"
+      />
+    );
+  }
 
   return (
     <div
@@ -55,16 +58,23 @@ const Search: React.FC<SearchPageProps> = ({ currentUser }) => {
     >
       <div className="w-full pt-1 px-4 overflow-auto flex-grow max-h-[85vh] pb-10 ">
         <div className="min-h-[100vh]">
-          <Navbar currentUser={currentUser} searchBar hidden/>
+          <Navbar currentUser={currentUser} searchBar hidden />
           <div>
             <div className="pb-10">
-              {searchResults?.length > 0 && (
-                <ul>
-                  {searchResults?.map((track: any) => (
-                    <li key={track.id}>{track.name}</li>
-                  ))}
-                </ul>
-              )}
+              <Heading title="Recent searches" />
+              <div className="pt-4 mx-auto">
+                {tracks?.length ? (
+                  <div className="grid mx-auto gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
+                    {tracks?.map((track: any) => (
+                      <PostCard key={track.id} data={track} backgroundColor />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    No tracks found
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

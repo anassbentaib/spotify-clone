@@ -51,8 +51,8 @@ const UserPage = () => {
               <Artists currentUser={user} />
             </div>
           </div>
-          <Footer />
         </div>
+          <Footer />
       </div>
     </div>
   );
