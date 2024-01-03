@@ -40,7 +40,7 @@ const SearchBar = () => {
       // Optionally, you can trigger search when the component mounts or when `searchQuery` changes
       handleSearchClick();
     }
-  }, [dispatch, token.access_token, searchQuery]);
+  }, [dispatch, token?.access_token, searchQuery]);
 
   return (
     <div className="w-full max-w-[500px] min-w-[100px]">

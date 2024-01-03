@@ -5,40 +5,45 @@ import { token } from "@/token";
 import { RootState } from "@/types";
 import { Link } from "@chakra-ui/react";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PostCard from "../posts/Post";
 import NoDataFound from "@/components/EmptyState/NoDataFound";
 
 const ArtistsPage = () => {
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
-
+  const [loading, setLoading] = useState(false);
   const artists = useSelector((state: RootState) => state?.artists?.items);
 
   const getArtists = () => {
-    if (token && token.access_token) {
-      dispatch(fetchAllArtists(token.access_token))
-        .then((resultAction) => {
-          if (fetchAllArtists.fulfilled.match(resultAction)) {
-            const artists = resultAction.payload;
-            dispatch(setArtists(artists));
-          } else {
-            console.error("Error fetching artisrs`:", resultAction.error);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      setLoading(true);
+      if (token && token.access_token) {
+        dispatch(fetchAllArtists(token.access_token))
+          .then((resultAction) => {
+            if (fetchAllArtists.fulfilled.match(resultAction)) {
+              const artists = resultAction.payload;
+              dispatch(setArtists(artists));
+            } else {
+              console.error("Error fetching artisrs`:", resultAction.error);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
     getArtists();
   }, [dispatch, token?.access_token]);
 
-  if (!artists) {
-    return (
-      <NoDataFound/>
-    );
+  if (loading) {
+    return <NoDataFound />;
   }
   return (
     <div className="pb-10">

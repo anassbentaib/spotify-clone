@@ -4,7 +4,7 @@ import { Track, setTrackData } from "@/features/trackes";
 import { token } from "@/token";
 import { RootState } from "@/types";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SongsCard from "./songsCard";
 import NoDataFound from "@/components/EmptyState/NoDataFound";
@@ -12,28 +12,35 @@ import NoDataFound from "@/components/EmptyState/NoDataFound";
 const TracksPage = () => {
   const tracks = useSelector((state: RootState) => state.tracks?.items);
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
-
+  const [loading, setLoading] = useState(false);
   const getAllTracks = () => {
-    if (token && token.access_token) {
-      dispatch(fetchAllTracks(token.access_token))
-        .then((resultAction: any) => {
-          if (fetchAllTracks.fulfilled.match(resultAction)) {
-            const tracks = resultAction.payload;
-            dispatch(setTrackData(tracks));
-          } else {
-            console.error("Error fetching tracks:", resultAction.error);
-          }
-        })
-        .catch((error: any) => {
-          console.error(error);
-        });
+    try {
+      setLoading(true);
+      if (token && token.access_token) {
+        dispatch(fetchAllTracks(token.access_token))
+          .then((resultAction: any) => {
+            if (fetchAllTracks.fulfilled.match(resultAction)) {
+              const tracks = resultAction.payload;
+              dispatch(setTrackData(tracks));
+            } else {
+              console.error("Error fetching tracks:", resultAction.error);
+            }
+          })
+          .catch((error: any) => {
+            console.error(error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
     getAllTracks();
   }, [dispatch, token?.access_token]);
 
-  if (!tracks) {
+  if (loading) {
     return <NoDataFound />;
   }
   return (

@@ -3,12 +3,13 @@ import Heading from "@/components/ui/Heading";
 import { token } from "@/token";
 import { RootState } from "@/types";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PostCard from "../posts/Post";
 import EmptyState from "@/components/EmptyState/page";
 import { fetchAllTracks } from "@/actions/getAllTracks";
 import { setTrackData } from "@/features/trackes";
+import NoDataFound from "@/components/EmptyState/NoDataFound";
 
 interface SearchPageProps {
   currentUser?: {
@@ -21,21 +22,28 @@ interface SearchPageProps {
 const Search: React.FC<SearchPageProps> = ({ currentUser }) => {
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
   const tracks = useSelector((state: RootState) => state.tracks?.items);
-
+  const [loading, setLoading] = useState(false);
   const getAllTracks = () => {
-    if (token && token.access_token) {
-      dispatch(fetchAllTracks(token.access_token))
-        .then((resultAction: any) => {
-          if (fetchAllTracks.fulfilled.match(resultAction)) {
-            const tracks = resultAction.payload;
-            dispatch(setTrackData(tracks));
-          } else {
-            console.error("Error fetching tracks:", resultAction.error);
-          }
-        })
-        .catch((error: any) => {
-          console.error(error);
-        });
+    try {
+      setLoading(true);
+      if (token && token?.access_token) {
+        dispatch(fetchAllTracks(token?.access_token))
+          .then((resultAction: any) => {
+            if (fetchAllTracks.fulfilled.match(resultAction)) {
+              const tracks = resultAction.payload;
+              dispatch(setTrackData(tracks));
+            } else {
+              console.error("Error fetching tracks:", resultAction.error);
+            }
+          })
+          .catch((error: any) => {
+            console.error(error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,13 +51,8 @@ const Search: React.FC<SearchPageProps> = ({ currentUser }) => {
     getAllTracks();
   }, [dispatch, token?.access_token]);
 
-  if (!tracks) {
-    return (
-      <EmptyState
-        title="Unauthenticated"
-        subTitle="Unauthenticated, Please login"
-      />
-    );
+  if (loading) {
+    return <NoDataFound />;
   }
 
   return (
@@ -60,22 +63,29 @@ const Search: React.FC<SearchPageProps> = ({ currentUser }) => {
         <div className="min-h-[100vh]">
           <Navbar currentUser={currentUser} searchBar hidden />
           <div>
-            <div className="pb-10">
-              <Heading title="Recent searches" />
-              <div className="pt-4 mx-auto">
-                {tracks?.length ? (
-                  <div className="grid mx-auto gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
-                    {tracks?.map((track: any) => (
-                      <PostCard key={track.id} data={track} backgroundColor />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center">
-                    No tracks found
-                  </div>
-                )}
+            {token !== null && token?.access_token !== null ? (
+              <div className="pb-10">
+                <Heading title="Recent searches" />
+                <div className="pt-4 mx-auto">
+                  {tracks?.length ? (
+                    <div className="grid mx-auto gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
+                      {tracks?.map((track: any) => (
+                        <PostCard key={track.id} data={track} backgroundColor />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      No tracks found
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            ) : (
+              <EmptyState
+                title="Unauthenticated"
+                subTitle="Unauthenticated, Please login"
+              />
+            )}
           </div>
         </div>
       </div>

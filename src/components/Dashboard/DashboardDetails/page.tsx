@@ -5,14 +5,17 @@ import { setPlayListData } from "@/features/playlists";
 import { token } from "@/token";
 import { RootState } from "@/types";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DashboardPostDetails from "./DashboardDetails";
 import Footer from "../Footer/Footer";
+import NoDataFound from "@/components/EmptyState/NoDataFound";
 
 const DashboardDetails = () => {
   const { user } = getCurrentUser();
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
+  const [loading, setLoading] = useState(false);
+
   const playlists = useSelector((state: RootState) => state?.playlists?.items);
   const gradientStyle = {
     background: `linear-gradient(transparent, rgba(0, 0, 0, 1))`,
@@ -20,19 +23,26 @@ const DashboardDetails = () => {
   };
 
   const getPlaylists = () => {
-    if (token && token.access_token) {
-      dispatch(fetchPlaylists(token.access_token))
-        .then((resultAction) => {
-          if (fetchPlaylists.fulfilled.match(resultAction)) {
-            const playlists = resultAction.payload;
-            dispatch(setPlayListData(playlists));
-          } else {
-            console.error("Error fetching playlists:", resultAction.error);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      setLoading(true);
+      if (token && token.access_token) {
+        dispatch(fetchPlaylists(token.access_token))
+          .then((resultAction) => {
+            if (fetchPlaylists.fulfilled.match(resultAction)) {
+              const playlists = resultAction.payload;
+              dispatch(setPlayListData(playlists));
+            } else {
+              console.error("Error fetching playlists:", resultAction.error);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -42,7 +52,9 @@ const DashboardDetails = () => {
       document.body.style.overflow = "auto";
     };
   }, [dispatch, token?.access_token]);
-
+  if (loading) {
+    <NoDataFound />;
+  }
   return (
     <div style={gradientStyle} className="w-full relative mx-auto">
       <div className="">

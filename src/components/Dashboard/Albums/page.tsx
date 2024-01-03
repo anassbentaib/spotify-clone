@@ -3,7 +3,7 @@ import { token } from "@/token";
 import { RootState } from "@/types";
 import { Link } from "@chakra-ui/react";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PostCard from "../posts/Post";
 import NoDataFound from "@/components/EmptyState/NoDataFound";
@@ -12,30 +12,37 @@ import { setItems } from "@/features/albums";
 
 const AlbumsPage = () => {
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
-
+  const [loading, setLoading] = useState(false);
   const albums = useSelector((state: RootState) => state?.albums?.items);
 
   const getAlbums = () => {
-    if (token && token.access_token) {
-      dispatch(fetchAllAlbums(token.access_token))
-        .then((resultAction) => {
-          if (fetchAllAlbums.fulfilled.match(resultAction)) {
-            const albums = resultAction.payload;
-            dispatch(setItems(albums));
-          } else {
-            console.error("Error fetching albums:", resultAction.error);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    try {
+      setLoading(true);
+      if (token && token.access_token) {
+        dispatch(fetchAllAlbums(token.access_token))
+          .then((resultAction) => {
+            if (fetchAllAlbums.fulfilled.match(resultAction)) {
+              const albums = resultAction.payload;
+              dispatch(setItems(albums));
+            } else {
+              console.error("Error fetching albums:", resultAction.error);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
     getAlbums();
   }, [dispatch, token?.access_token]);
 
-  if (!albums) {
+  if (loading) {
     return <NoDataFound />;
   }
   return (

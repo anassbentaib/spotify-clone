@@ -6,9 +6,14 @@ import { Link } from "@chakra-ui/react";
 const Authentification = () => {
   const handleLogin = () => {
     try {
-      const clientId = "5e7212fc7cf24c199602a197fda7bccc";
-      const redirectUri = "https://spotify.beanass.dev/callback";
-      const appUrl = "https://accounts.spotify.com/authorize";
+      const clientId = import.meta.env.VITE_REACT_APP_CLIENT_ID;
+      const redirectUri =
+        import.meta.env.VITE_REACT_APP_REDIRECT_URI ||
+        "http://localhost:5173/callback";
+      const appUrl =
+        import.meta.env.VITE_REACT_APP_APP_URL ||
+        "https://accounts.spotify.com/authorize";
+
       const scopes = [
         "user-read-private",
         "user-modify-playback-state",

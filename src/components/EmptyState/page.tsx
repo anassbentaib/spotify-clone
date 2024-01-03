@@ -1,17 +1,11 @@
-import { getCurrentUser } from "@/actions/getCurrectUser";
-import Navbar from "../Navbar/page";
-
 interface EmptyStateProps {
   title: String;
   subTitle: String;
 }
 
 const EmptyState = ({ title, subTitle }: EmptyStateProps) => {
-  const { user } = getCurrentUser();
-
   return (
     <div>
-      <Navbar currentUser={user} />
       <div
         className="
       h-[60vh]

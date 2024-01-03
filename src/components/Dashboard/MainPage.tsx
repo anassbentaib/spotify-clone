@@ -16,7 +16,7 @@ interface MainPageProps {
     imageUrl: string | null;
   } | null;
 }
-if (token === null || !token.access_token === null) {
+if (token === null && token?.access_token === null) {
   <EmptyState
     title="Unauthenticated"
     subTitle="Unauthenticated, Please login"
@@ -31,12 +31,19 @@ const MainPage: React.FC<MainPageProps> = ({ currentUser }) => {
       <div className="w-full pt-1 px-4 overflow-auto flex-grow max-h-[85vh] pb-10 ">
         <div className="min-h-[100vh]">
           <Navbar currentUser={currentUser} />
-          <div>
-            <TracksPage />
-            <ArtistsPage />
-            <AlbumsPage />
-            <PlaylistsPage />
-          </div>
+          {token !== null && token?.access_token !== null ? (
+            <div>
+              <TracksPage />
+              <ArtistsPage />
+              <AlbumsPage />
+              <PlaylistsPage />
+            </div>
+          ) : (
+            <EmptyState
+              title="Unauthenticated"
+              subTitle="Unauthenticated, Please login"
+            />
+          )}
         </div>
       </div>
     </div>

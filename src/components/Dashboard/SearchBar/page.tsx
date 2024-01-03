@@ -15,8 +15,8 @@ const SearchPage = () => {
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
 
   const getPlaylists = () => {
-    if (token && token.access_token) {
-      dispatch(fetchPlaylists(token.access_token))
+    if (token && token?.access_token) {
+      dispatch(fetchPlaylists(token?.access_token))
         .then((resultAction) => {
           if (fetchPlaylists.fulfilled.match(resultAction)) {
             const playlists = resultAction.payload;

@@ -3,7 +3,7 @@ import { token } from "@/token";
 import { RootState } from "@/types";
 import { Link } from "@chakra-ui/react";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PostCard from "../posts/Post";
 import NoDataFound from "@/components/EmptyState/NoDataFound";
@@ -13,21 +13,29 @@ import { setPlayListData } from "@/features/playlists";
 const PlaylistsPage = () => {
   const dispatch = useDispatch<ThunkDispatch<RootState, void, AnyAction>>();
   const playlists = useSelector((state: RootState) => state?.playlists?.items);
+  const [loading, setLoading] = useState(false);
 
   const getPlaylists = () => {
-    if (token && token.access_token) {
-      dispatch(fetchPlaylists(token.access_token))
-        .then((resultAction) => {
-          if (fetchPlaylists.fulfilled.match(resultAction)) {
-            const playlists = resultAction.payload;
-            dispatch(setPlayListData(playlists));
-          } else {
-            console.error("Error fetching playlists:", resultAction.error);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      setLoading(true);
+      if (token && token.access_token) {
+        dispatch(fetchPlaylists(token.access_token))
+          .then((resultAction) => {
+            if (fetchPlaylists.fulfilled.match(resultAction)) {
+              const playlists = resultAction.payload;
+              dispatch(setPlayListData(playlists));
+            } else {
+              console.error("Error fetching playlists:", resultAction.error);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,7 +43,7 @@ const PlaylistsPage = () => {
     getPlaylists();
   }, [dispatch, token?.access_token]);
 
-  if (!playlists) {
+  if (loading) {
     return <NoDataFound />;
   }
   return (
