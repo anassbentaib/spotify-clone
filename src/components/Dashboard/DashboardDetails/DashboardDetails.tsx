@@ -16,7 +16,7 @@ import { fetchAllArtists } from "@/actions/getArtists";
 import { setArtists } from "@/features/artists";
 import { fetchAllTracks } from "@/actions/getAllTracks";
 import { setTrackData } from "@/features/trackes";
-import EmptyState from "@/components/EmptyState/page";
+import NoDataFound from "@/components/EmptyState/NoDataFound";
 
 interface DashboardDetailsProps {
   currentUser?: {
@@ -110,12 +110,7 @@ const DashboardPostDetails: React.FC<DashboardDetailsProps> = ({
     getPlaylists();
   }, [dispatch, token?.access_token]);
   if (!albums || !playlists) {
-    return (
-      <EmptyState
-        title="Unauthenticated"
-        subTitle="Unauthenticated, Please login"
-      />
-    );
+    return <NoDataFound />;
   }
   return (
     <div

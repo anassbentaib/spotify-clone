@@ -8,8 +8,6 @@ const Authentification = () => {
     try {
       const clientId = "5e7212fc7cf24c199602a197fda7bccc";
       const redirectUri = "https://spotify.beanass.dev/callback";
-      // const redirectUri = "http://localhost:5173/callback";
-
       const appUrl = "https://accounts.spotify.com/authorize";
       const scopes = [
         "user-read-private",
@@ -25,7 +23,6 @@ const Authentification = () => {
         "user-library-read",
         "user-library-modify",
       ];
-      
 
       window.location.href = `${appUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
         "%20"

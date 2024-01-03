@@ -5,6 +5,8 @@ import TracksPage from "./tracks/post";
 import ArtistsPage from "./Artists/page";
 import AlbumsPage from "./Albums/page";
 import PlaylistsPage from "./playlists/page";
+import { token } from "@/token";
+import EmptyState from "../EmptyState/page";
 
 interface MainPageProps {
   currentUser?: {
@@ -14,7 +16,12 @@ interface MainPageProps {
     imageUrl: string | null;
   } | null;
 }
-
+if (!token || !token.access_token) {
+  <EmptyState
+    title="Unauthenticated"
+    subTitle="Unauthenticated, Please login"
+  />;
+}
 const MainPage: React.FC<MainPageProps> = ({ currentUser }) => {
   return (
     <div
